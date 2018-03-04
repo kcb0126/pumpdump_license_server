@@ -10,6 +10,10 @@ function success() {
     die(json_encode(['success'=>1, 'message'=>'']));
 }
 
+function successWithData($data) {
+    die(json_encode(['success'=>1, 'message'=>'', 'data'=>$data]));
+}
+
 function fail($message='') {
     die(json_encode(['success'=>0, 'message'=>$message]));
 }

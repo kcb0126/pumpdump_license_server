@@ -22,16 +22,10 @@ if(array_key_exists('pwd', $_POST)) {
     fail('You must input user\'s password to register a new user.');
 }
 
-if(array_key_exists('devicecount', $_POST)) {
-    $devicecount = $_POST['devicecount'];
-} else {
-    $devicecount = 1;
-}
-
 if(findUser($email) != null) {
     fail('The email is used already');
 }
 
-registerUser($email, $pwd, $devicecount);
+registerUser($email, $pwd);
 
 success();

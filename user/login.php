@@ -35,18 +35,10 @@ if($user != null) {
     }
 
     $cnt = 0;
-    foreach ($user['uuid'] as $uuid1) {
-        if($uuid1 === '') {
-            continue;
-        }   
-        $cnt++;
-        if($uuid === $uuid1) {
-            success();
-        }
-    }
-    if($cnt < $user['devicecount']) {
-        $user['uuid'][] = $uuid;
-        updateUser($email, $user['password'], $user['uuid'], $user['devicecount']);
+    if ($user['uuid'] == $uuid) {
+        success();
+    } else if($user['uuid'] == '') {
+        updateUser($email, $user['password'], $user['uuid']);
     } else {
         fail('This is a new device and you cannot use it');
     }
