@@ -38,7 +38,7 @@ if($user != null) {
     if ($user['uuid'] == $uuid) {
         success();
     } else if($user['uuid'] == '') {
-        updateUser($email, $user['password'], $user['uuid']);
+        updateUser($email, $user['password'], $uuid);
     } else {
         fail('This is a new device and you cannot use it');
     }

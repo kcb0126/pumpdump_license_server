@@ -38,33 +38,23 @@ function changeAdmin($newname, $newpassword) {
 
 function findUser($email) {
     global $mysqli;
-    $res = $mysqli->query("SELECT `email`, `password`, `uuid` FROM `users` WHERE `email`='$email'");
+    $res = $mysqli->query("SELECT `email`, `password`, `uuid`, `ip`, `country_name` FROM `users` WHERE `email`='$email'");
 
     if($res->num_rows == 0) {
         return null;
     }
     else {
         $user = $res->fetch_assoc();
-        return ['email'=>$email, 'password'=>$user['password'], 'uuid'=>$user['uuid']];
+        return ['email'=>$email, 'password'=>$user['password'], 'uuid'=>$user['uuid'], 'ip'=>$user['ip'], 'country_name'=>$user['country_name']];
     }
 }
 
 function getUserList() {
     global $mysqli;
-    $res = $mysqli->query("SELECT `email`, `password`, `uuid` FROM `users` WHERE TRUE");
+    $res = $mysqli->query("SELECT `email`, `password`, `uuid`, `ip`, `country_name` FROM `users` WHERE TRUE");
     $users = [];
     while($row=$res->fetch_assoc()) {
-        $users[] = ['email'=>$row['email'], 'password'=>$row['password'], 'uuid'=>$row['uuid']];
-    }
-    return $users;
-}
-
-function getUserListTest() {
-    global $mysqli;
-    $res = $mysqli->query("SELECT `email`, `password`, `uuid` FROM `users` WHERE TRUE");
-    print_r($res->num_rows);
-    while($row=$res->fetch_assoc()) {
-        $users[] = ['email'=>$row['email'], 'password'=>$row['password'], 'uuid'=>$row['uuid']];
+        $users[] = ['email'=>$row['email'], 'password'=>$row['password'], 'uuid'=>$row['uuid'], 'ip'=>$row['ip'], 'country_name'=>$row['country_name']];
     }
     return $users;
 }
@@ -74,7 +64,29 @@ function updateUser($email, $password, $uuid, $newemail=null) {
     if($newemail == null) {
         $newemail = $email;
     }
-    $mysqli->query("UPDATE `users` SET `email`='$newemail', `password`='$password', `uuid`='$uuid' WHERE `email`='$email'");
+    $ip = htmlspecialchars($_SERVER['REMOTE_ADDR']);
+
+    ////////// get information about the ip ////////////////
+
+    // create curl resource
+    $ch = curl_init();
+
+    // set url
+    curl_setopt($ch, CURLOPT_URL, 'http://freegeoip.net/json/'.$ip);
+
+    // return the transfer as a string
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    // $output contains the output string
+    $output = curl_exec($ch);
+
+    curl_close($ch);
+
+    $data = json_decode($output);
+
+    $country_name = $data->country_name;
+
+    $mysqli->query("UPDATE `users` SET `email`='$newemail', `password`='$password', `uuid`='$uuid', `ip`='$ip', `country_name`='$country_name' WHERE `email`='$email'");
 }
 
 function registerUser($email, $password) {
